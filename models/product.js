@@ -1,32 +1,60 @@
-const {DataTypes}=require('sequelize');
-const sequelize=require('../config/sequelize');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-const Product=sequelize.define('Product',{
-    productId:{
-        type:DataTypes.INTEGER,
-        autoIncrement:true,
-        primaryKey:true
+const Product = sequelize.define('Product', {
+    productId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    productName:{
-      type:DataTypes.STRING,
-      allowNull:false 
+    productName: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    description:{
-        type:DataTypes.STRING,
-        allowNull:false
+    productDesc: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    price:{
-        type:DataTypes.STRING,
-        allowNull:false
+    price: {
+        type: DataTypes.FLOAT,
+        allowNull: false
     },
-    imageVideo:{
-        type:DataTypes.STRING,
-        allowNull:true
-    },
-    category:{
-        type:DataTypes.STRING,
-        allowNull:true
+    category: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue:'null'
     },
 });
 
-module.exports=Product;
+const File = sequelize.define('File', {
+    fileName: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    filePath: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fileSize: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    productId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Product,
+            key: 'productId',
+        },
+        allowNull: true
+    }
+});
+Product.hasMany(File, {
+    foreignKey: 'productId',
+    as: 'files',
+});
+
+File.belongsTo(Product, {
+    foreignKey: 'productId',
+    as: 'product',
+})
+module.exports = { Product, File };

@@ -1,9 +1,17 @@
 const express = require('express');
-const createProduct=require('../controllers/productController');
-const adminLogin = require('../controllers/adminLogin'); // Import the controller
+const app=express();
+const upload = require('../config/multer');
+const {uploadSingleFile,uploadMultipleFile}=require('../controllers/productUpload');
+const adminLogin = require('../controllers/adminLogin'); 
 const router = express.Router();
 
-// Define the route for login
-router.post('/login', adminLogin.loginAdmin);  // Use the correct method from the controller
-router.post('/product',createProduct);
+router.post('/login', adminLogin.loginAdmin); 
+router.post('/singleUpload',upload.single('file'),uploadSingleFile);
+router.post('/multipleUpload',upload.array('files',5),uploadMultipleFile);
+
+app.use((err, req, res, next) => {
+    console.error(err); 
+    res.status(400).json({ error: err.message });
+  });
+
 module.exports = router;
